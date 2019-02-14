@@ -1,9 +1,6 @@
 extern crate rand;
 
 use std::io::{Read, Write, BufWriter};
-use error::Chip8Error;
-use instructions::Register;
-use instructions::{RawInstruction, Instruction};
 use std::slice::Chunks;
 
 use rand::Rng;
@@ -343,8 +340,6 @@ impl Vm {
                 self.pc += 2;
             }
         };
-
-
     }
 
     pub fn set_keys(&self) {

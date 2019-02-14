@@ -2,6 +2,6 @@
 name = "chip-8"
 version = "0.1.0"
 authors = ["nailstorms <nailstorm@protonmail.ch>"]
-edition = "2018"
+edition = "2019"
 
 [dependencies]
