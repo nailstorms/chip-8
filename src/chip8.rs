@@ -177,7 +177,7 @@ impl Vm {
                 /// 00E0 =
                 /// Clear the screen.
                 0x0000 => {
-                    self.screen = [0; 64 * 32];
+                    self.screen = [0; SCREEN_PIXELS];
                     self.draw_flag = true;
                     self.pc += 2;
                 },
@@ -398,12 +398,12 @@ impl Vm {
                         if (pixel & (0x80 >> xline)) != 0 {
                             // since the pixel will be drawn, check the destination location in
                             // gfx for collision (verify if that location is flipped on (== 1))
-                            if self.screen[(x + xline + (y + yline) * 64) as usize] == 1 {
+                            if self.screen[(x + xline + (y + yline) * SCREEN_WIDTH) as usize] == 1 {
                                 self.v[0xF] = 1; // register the collision
                             }
 
                             // draw in XOR mode
-                            self.screen[(x + xline + (y + yline) * 64) as usize] ^= 1;
+                            self.screen[(x + xline + (y + yline) * SCREEN_WIDTH) as usize] ^= 1;
                         }
                     }
                 }
