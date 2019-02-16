@@ -5,3 +5,5 @@ authors = ["nailstorms <nailstorm@protonmail.ch>"]
 edition = "2018"
 
 [dependencies]
+rand = "*"
+glium = "*"
