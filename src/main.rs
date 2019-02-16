@@ -13,7 +13,7 @@ fn main() {
     ///////////////////// COMMAND LINE ARGS /////////////////////
     let args: Vec<String> = env::args().collect();
     if args.len() != 2 {
-        println!("Usage: chip8 [PATH_TO_ROM]");
+        println!("Usage: chip-8 [PATH_TO_ROM]");
         return;
     }
     let path_to_game = &args[1];
