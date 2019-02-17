@@ -248,7 +248,7 @@ impl Vm {
             // 7XNN =
             // Add NN to VX.
             0x7000 => {
-                self.v[x] += self.v[x].wrapping_add(nn as u8);
+                self.v[x] = self.v[x].wrapping_add(nn as u8);
                 self.pc += 2;
             },
 
