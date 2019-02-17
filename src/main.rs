@@ -36,10 +36,10 @@ fn main() {
         tex_coords: [f32; 2], // this is new
     }
     implement_vertex!(Vertex, position, tex_coords);
-    let vertex1 = Vertex { position: [-0.5, 0.5], tex_coords: [0.0, 1.0]};
-    let vertex2 = Vertex { position: [ 0.5,  0.5], tex_coords: [1.0, 1.0]};
-    let vertex3 = Vertex { position: [ 0.5, -0.5], tex_coords: [1.0, 0.0]};
-    let vertex4 = Vertex { position: [ -0.5, -0.5], tex_coords: [0.0, 0.0]};
+    let vertex1 = Vertex { position: [-0.5, 0.5], tex_coords: [1.0, 0.0]};
+    let vertex2 = Vertex { position: [ 0.5,  0.5], tex_coords: [0.0, 0.0]};
+    let vertex3 = Vertex { position: [ 0.5, -0.5], tex_coords: [0.0, 1.0]};
+    let vertex4 = Vertex { position: [ -0.5, -0.5], tex_coords: [1.0, 1.0]};
     let shape = vec![vertex1, vertex2, vertex3, vertex4];
 
     // uploading this shape to the memory of our video card in what is called a vertex buffer
