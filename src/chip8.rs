@@ -82,6 +82,7 @@ pub struct Vm {
     sp: u16,
 
     pub draw_flag: bool,
+    key_wait: Option<u8>,
 }
 
 impl Vm {
@@ -117,6 +118,7 @@ impl Vm {
             sound_timer: 0,
 
             draw_flag: true,
+            key_wait: None,
         };
 
         {
@@ -153,6 +155,23 @@ impl Vm {
         for i in 0..buffer_size {
             self.ram[i + 512] = buffer[i];
         }
+    }
+
+    // Mark the key with index `idx` as being set
+    pub fn set_key(&mut self, idx: u8) {
+        println!("Set key {}", idx);
+        self.keys[idx as usize] = 1;
+        if let Some(Vx) = self.key_wait {
+            println!("No longer waiting on key");
+            self.v[Vx as usize] = idx;
+            self.key_wait = None;
+        }
+    }
+
+    // Reset the key with index `idx`
+    pub fn reset_key(&mut self, idx: u8) {
+        println!("Reset key {}", idx);
+        self.keys[idx as usize] = 0;
     }
 
     pub fn emulate_cycle(&mut self) {
@@ -363,7 +382,7 @@ impl Vm {
             },
 
             // BNNN =
-            // Lump to the address NNN plus V0.
+            // Jump to the address NNN plus V0.
             0xB000 => {
                 self.pc = nnn + (self.v[0x0] as u16);
             },
@@ -457,19 +476,7 @@ impl Vm {
                 // A key press is awaited, and then stored in VX.
                 0x000A => {
                     // TODO: Waits a keypress and stores it in VX
-                    let mut key_press = false;
-                    for i in 0..16 {
-                        if self.keys[i] != 0 {
-                            self.v[x] = i as u8;
-                            key_press = true;
-                        }
-                    }
-
-                    // if we didn't receive a keypress, skip this cycle and try again.
-                    if !key_press {
-                        return;
-                    }
-
+                    self.key_wait = Some(vx);
                     self.pc += 2;
                 },
 
@@ -552,9 +559,5 @@ impl Vm {
             }
             self.sound_timer -= 1;
         }
-    }
-
-    pub fn set_keys(&self) {
-
     }
 }
