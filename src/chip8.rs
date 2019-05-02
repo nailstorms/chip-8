@@ -476,7 +476,7 @@ impl Vm {
                 // A key press is awaited, and then stored in VX.
                 0x000A => {
                     // TODO: Waits a keypress and stores it in VX
-                    self.key_wait = Some(vx);
+                    // self.key_wait = Some(vx);
                     self.pc += 2;
                 },
 

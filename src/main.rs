@@ -36,10 +36,10 @@ fn main() {
         tex_coords: [f32; 2], // this is new
     }
     implement_vertex!(Vertex, position, tex_coords);
-    let vertex1 = Vertex { position: [-0.5, 0.5], tex_coords: [1.0, 0.0]};
-    let vertex2 = Vertex { position: [ 0.5,  0.5], tex_coords: [0.0, 0.0]};
-    let vertex3 = Vertex { position: [ 0.5, -0.5], tex_coords: [0.0, 1.0]};
-    let vertex4 = Vertex { position: [ -0.5, -0.5], tex_coords: [1.0, 1.0]};
+    let vertex1 = Vertex { position: [-0.5, 0.5], tex_coords: [0.0, 0.0]};
+    let vertex2 = Vertex { position: [ 0.5,  0.5], tex_coords: [1.0, 0.0]};
+    let vertex3 = Vertex { position: [ 0.5, -0.5], tex_coords: [1.0, 1.0]};
+    let vertex4 = Vertex { position: [ -0.5, -0.5], tex_coords: [0.0, 1.0]};
     let shape = vec![vertex1, vertex2, vertex3, vertex4];
 
     // uploading this shape to the memory of our video card in what is called a vertex buffer
@@ -85,6 +85,41 @@ fn main() {
     chip8_vm.load_game(path_to_game);
 
     ///////////////////////////////////////////////////
+
+    ///////////////// KEY MAPPING /////////////////////
+
+//    fn map_keys(k: glutin::KeyboardInput) -> Option<u8> {
+//        if let Some() = k.virtual_keycode {
+//            return match k {
+//                glutin::VirtualKeyCode::Key1 => Some(0x1),
+//                glutin::VirtualKeyCode::Key2 => Some(0x2),
+//                glutin::VirtualKeyCode::Key3 => Some(0x3),
+//
+//                glutin::VirtualKeyCode::Q => Some(0x4),
+//                glutin::VirtualKeyCode::W => Some(0x5),
+//                glutin::VirtualKeyCode::E => Some(0x6),
+//
+//                glutin::VirtualKeyCode::A => Some(0x7),
+//                glutin::VirtualKeyCode::S => Some(0x8),
+//                glutin::VirtualKeyCode::D => Some(0x9),
+//
+//                glutin::VirtualKeyCode::Z => Some(0xA),
+//                glutin::VirtualKeyCode::X => Some(0x0),
+//                glutin::VirtualKeyCode::C => Some(0xB),
+//
+//                glutin::VirtualKeyCode::Key4 => Some(0xC),
+//                glutin::VirtualKeyCode::R => Some(0xD),
+//                glutin::VirtualKeyCode::F => Some(0xE),
+//                glutin::VirtualKeyCode::V => Some(0xF),
+//
+//                _ => None
+//            }
+//        }
+//        return None;
+//    }
+
+    ///////////////////////////////////////////////////
+
 
     // emulation loop
     let mut closed = false;
@@ -135,6 +170,6 @@ fn main() {
         }
 
         // store key press stage (Press and Release)
-        chip8_vm.set_keys();
+        // chip8_vm.set_keys();
     }
 }
