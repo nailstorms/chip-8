@@ -2,3 +2,4 @@ target/
 **/*.rs.bk
 games/
 .idea/
+SDL2.dll

@@ -1,12 +1,9 @@
-extern crate rand;
-
-use std::io::{Read, Write, BufWriter};
+use std::io::Read;
 use std::fs::File;
 use std::path::Path;
 use std::error::Error;
-
-use rand::Rng;
-use opcodes::*;
+use crate::opcodes::*;
+use crate::ui::Ui;
 
 /// Size of the RAM in bytes
 const RAM_SIZE: usize = 4096;
@@ -15,10 +12,8 @@ const STACK_SIZE: usize = 16;
 /// Number of data registers, i.e. `V0` .. `VF`
 const DATA_REGISTERS_COUNT: usize = 16;
 /// Memory address for program (ROM) start
-const PROGRAM_START: u16 = 0x200;
+const PROGRAM_START: usize = 0x200;
 
-/// Memory address of built-in font sprites
-const FONT_ADDR: usize = 0;
 /// Number of rows in one font sprite
 const FONT_HEIGHT: usize = 5;
 /// Size of one font sprite
@@ -57,6 +52,7 @@ const KEYS_COUNT: usize = 16;
 /// The virtual machine manages state like its registers,
 /// RAM, stack, screen pixels, pressed keys as well as
 /// timers and some internal state.
+
 pub struct Vm {
     pub opcode: u16,
     pub ram: [u8; RAM_SIZE],
@@ -66,7 +62,7 @@ pub struct Vm {
 
     /// Index register and program counter
     pub i: u16,
-    pub pc: u16,
+    pub pc: usize,
 
     /// Screen: 64 x 32 pixels
     pub screen: [u8; SCREEN_PIXELS],
@@ -80,16 +76,15 @@ pub struct Vm {
 
     /// Stack and stack pointer
     pub stack: [u16; STACK_SIZE],
-    pub sp: u16,
+    pub sp: usize,
 
-    pub draw_flag: bool,
+    pub draw_flag: bool
 }
 
 impl Vm {
+
     /// Creates a new `Vm` instance with default state
     pub fn init() -> Vm {
-
-
         Vm {
             pc: PROGRAM_START,
             i: 0,
@@ -97,19 +92,16 @@ impl Vm {
             v: [0; DATA_REGISTERS_COUNT],
             ram: [0; RAM_SIZE],
 
-            // inputs/outputs
             screen: [0; SCREEN_PIXELS],
             key_states: [false; KEYS_COUNT],
 
-            // initialize stack and stack pointer
             stack: [0; STACK_SIZE],
             sp: 0,
 
-            // reset timers
             delay_timer: 0,
             sound_timer: 0,
 
-            draw_flag: true,
+            draw_flag: false
         }
     }
 
@@ -146,25 +138,6 @@ impl Vm {
         }
     }
 
-    /*
-    // Mark the key with index `idx` as being set
-    pub fn set_key(&mut self, idx: u8) {
-        println!("Set key {}", idx);
-        self.keys[idx as usize] = 1;
-        if let Some(Vx) = self.key_wait {
-            println!("No longer waiting on key");
-            self.v[Vx as usize] = idx;
-            self.key_wait = None;
-        }
-    }
-
-    // Reset the key with index `idx`
-    pub fn reset_key(&mut self, idx: u8) {
-        println!("Reset key {}", idx);
-        self.keys[idx as usize] = 0;
-    }
-    */
-
 
     pub fn translate_opcode(&mut self) {
 
@@ -176,7 +149,7 @@ impl Vm {
                 // 00EE
                 0x00EE => ret(self),
 
-                _ => println!("Unknown opcode [0x0000]: {:X}", self.opcode)
+                _ => panic!("Unknown opcode [0x0000]: {:X}", self.opcode)
             },
 
             // 1NNN
@@ -229,7 +202,7 @@ impl Vm {
                 // 8XYE
                 0x000E => shl_vx_vy(self),
 
-                _ => println!("Unknown opcode [0x8000]: {:02X}", self.opcode)
+                _ => panic!("Unknown opcode [0x8000]: {:02X}", self.opcode)
             },
 
             // 9XY0
@@ -255,7 +228,7 @@ impl Vm {
                 // EXA1
                 0x00A1 => sknp_vx(self),
 
-                _ => println!("Unknown opcode [0xE000]: {:02X}", self.opcode)
+                _ => panic!("Unknown opcode [0xE000]: {:02X}", self.opcode)
             },
 
             0xF000 => match self.opcode & 0x00FF {
@@ -287,10 +260,10 @@ impl Vm {
                 // FX65
                 0x0065 => ld_vx_i(self),
 
-                _ => println!("Unknown opcode [0xF000]: {:02X}", self.opcode)
+                _ => panic!("Unknown opcode [0xF000]: {:02X}", self.opcode)
             },
 
-            _ => println!("Unknown opcode: {:02X}", self.opcode),
+            _ => panic!("Unknown opcode: {:02X}", self.opcode),
         };
     }
 
@@ -302,13 +275,13 @@ impl Vm {
 
         if self.sound_timer > 0 {
             if self.sound_timer == 1 {
-                println!("BEEP!");
+                panic!("BEEP!");
             }
             self.sound_timer -= 1;
         }
     }
 
-    pub fn emulate_cycle(&mut self) {
+    pub fn emulate_cycle(&mut self, ui: &mut Ui) {
         // fetch opcode: merge two memory locations for an opcode (build opcode with next two bytes)
         self.opcode = (self.ram[self.pc as usize] as u16) << 8 | self.ram[self.pc as usize + 1] as u16;
 

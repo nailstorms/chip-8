@@ -1,6 +1,6 @@
 extern crate rand;
 
-use vm::Vm;
+use crate::vm::Vm;
 use rand::Rng;
 
 // 00E0 =
@@ -16,7 +16,7 @@ pub fn cls(vm: &mut Vm) {
 pub fn ret(vm: &mut Vm) {
     vm.sp -= 1;
     vm.pc = vm.stack[vm.sp] as usize;
-    // vm.pc += 2;
+    vm.pc += 2;
 }
 
 // 1NNN =
@@ -87,7 +87,6 @@ pub fn add_vx_byte(vm: &mut Vm) {
     let x = ((vm.opcode & 0x0F00) >> 8) as usize;
     vm.v[x] = vm.v[x].wrapping_add((vm.opcode & 0x00FF) as u8);
 
-    vm.v[x] = sum as u8;
     vm.pc += 2;
 }
 
@@ -240,7 +239,7 @@ pub fn ld_i_addr(vm: &mut Vm) {
 // BNNN =
 // Jump to the address NNN plus V0.
 pub fn jp_v0_addr(vm: &mut Vm) {
-    vm.pc = (vm.opcode & 0x0FFF) + (vm.v[0x0] as u16);
+    vm.pc = ((vm.opcode & 0x0FFF) as usize) + (vm.v[0x0] as usize);
     // vm.pc += 2;
 }
 
@@ -286,7 +285,7 @@ pub fn drw_vx_vy_n(vm: &mut Vm) {
                 if vm.screen[current_position as usize] == 1 {
                     vm.v[0xF] = 1; // register the collision
                 }
-                vm.display[current_position as usize] ^= 1;
+                vm.screen[current_position as usize] ^= 1;
             }
         }
     }
@@ -327,7 +326,7 @@ pub fn sknp_vx(vm: &mut Vm) {
 // Set VX to the value of the delay timer
 pub fn ld_vx_dt(vm: &mut Vm) {
     let x = ((vm.opcode & 0x0F00) >> 8) as usize;
-    vm.v[((vm.opcode & 0x0F00 ) >> 8) as usize] = vm.delay_timer;
+    vm.v[x] = vm.delay_timer;
     vm.pc += 2;
 }
 
@@ -399,10 +398,10 @@ pub fn ld_b_vx(vm: &mut Vm) {
 // Store values contained in V0-VX in memory
 // starting at address I.
 pub fn ld_i_vx(vm: &mut Vm) {
-    let x = ((vm.opcode & 0x0F00) >> 8) as usize;
+    let x = (vm.opcode & 0x0F00) >> 8;
 
     for index in 0..x + 1 {
-        vm.ram[vm.i + index] = vm.v[index];
+        vm.ram[(vm.i + index) as usize] = vm.v[index as usize];
     }
     vm.pc += 2;
 }
@@ -411,10 +410,10 @@ pub fn ld_i_vx(vm: &mut Vm) {
 // Fills V0-VX with values from memory
 // starting at address I.
 pub fn ld_vx_i(vm: &mut Vm) {
-    let x = ((vm.opcode & 0x0F00) >> 8) as usize;
+    let x = (vm.opcode & 0x0F00) >> 8;
 
     for index in 0..x + 1 {
-        vm.v[index] = vm.ram[vm.i + index];
+        vm.v[index as usize] = vm.ram[(vm.i + index) as usize];
     }
     vm.pc += 2;
 }
