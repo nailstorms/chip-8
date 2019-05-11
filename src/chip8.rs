@@ -71,7 +71,7 @@ pub struct Vm {
     pub screen: [u8; SCREEN_PIXELS],
 
     /// HEX based keypad (0x0-0xF)
-    keys: [u8; KEYS_COUNT],
+    key_states: [bool; KEYS_COUNT],
 
     /// Timer registers
     delay_timer: u8,
@@ -107,7 +107,7 @@ impl Vm {
 
             // inputs/outputs
             screen: [0; SCREEN_PIXELS],
-            keys: [0; KEYS_COUNT],
+            key_states: [0; KEYS_COUNT],
 
             // initialize stack and stack pointer
             stack: [0; STACK_SIZE],
@@ -130,9 +130,9 @@ impl Vm {
 
     }
 
-    pub fn load_game(&mut self, game: &str) {
+    pub fn load_game(&mut self, game_location: &str) {
         // Create a path to the desired file
-        let path = Path::new(game);
+        let path = Path::new(game_location);
         let display = path.display();
 
         // Open the path in read-only mode, returns
@@ -157,6 +157,7 @@ impl Vm {
         }
     }
 
+    /*
     // Mark the key with index `idx` as being set
     pub fn set_key(&mut self, idx: u8) {
         println!("Set key {}", idx);
@@ -173,25 +174,10 @@ impl Vm {
         println!("Reset key {}", idx);
         self.keys[idx as usize] = 0;
     }
+    */
 
-    pub fn emulate_cycle(&mut self) {
-        // fetch opcode: merge two memory locations for an opcode
-        self.opcode = (self.ram[self.pc as usize] as u16) << 8 | self.ram[self.pc as usize + 1] as u16;
+    pub fn translate_opcode(&mut self) {
 
-        // register identifiers
-        let x = ((self.opcode & 0x0F00) as usize) >> 8;
-        let y = ((self.opcode & 0x00F0) as usize) >> 4;
-
-        // constants
-        // value
-        let nn = self.opcode & 0x00FF; // u16
-
-        // address
-        let nnn = self.opcode & 0x0FFF; // u16
-
-        println!("Executing opcode 0x{:X}", self.opcode);
-
-        // decode opcode & execute opcode
         match self.opcode & 0xF000 {
             0x0000 => match self.opcode & 0x000F {
 
@@ -442,7 +428,7 @@ impl Vm {
                 // Skips the next instruction if the key stored in VX
                 // is pressed.
                 0x009E => {
-                    if self.keys[self.v[x] as usize] != 0 {
+                    if self.key_states[self.v[x] as usize] != 0 {
                         self.pc += 4;
                     } else {
                         self.pc += 2;
@@ -453,7 +439,7 @@ impl Vm {
                 // Skip the next instruction if the key stored in VX
                 // isn't pressed.
                 0x00A1 => {
-                    if self.keys[self.v[x] as usize] != 1 {
+                    if self.key_states[self.v[x] as usize] != 1 {
                         self.pc += 4;
                     } else {
                         self.pc += 2;
@@ -547,8 +533,10 @@ impl Vm {
 
             _ => println!("Unknown opcode: {:02X}", self.opcode),
         };
+    }
 
-        // update timers
+    pub fn update_timers(&mut self) {
+
         if self.delay_timer > 0 {
             self.delay_timer -= 1;
         }
@@ -559,5 +547,27 @@ impl Vm {
             }
             self.sound_timer -= 1;
         }
+    }
+
+    pub fn emulate_cycle(&mut self) {
+        // fetch opcode: merge two memory locations for an opcode (build opcode with next two bytes)
+        self.opcode = (self.ram[self.pc as usize] as u16) << 8 | self.ram[self.pc as usize + 1] as u16;
+
+        // register identifiers
+        let x = ((self.opcode & 0x0F00) as usize) >> 8;
+        let y = ((self.opcode & 0x00F0) as usize) >> 4;
+
+        // constants
+        // value
+        let nn = self.opcode & 0x00FF; // u16
+
+        // address
+        let nnn = self.opcode & 0x0FFF; // u16
+
+        //println!("Executing opcode 0x{:X}", self.opcode);
+
+        self.translate_opcode();
+
+        self.update_timers();
     }
 }
