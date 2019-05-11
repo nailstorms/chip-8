@@ -5,7 +5,7 @@ extern crate rand;
 use glium::{Display, Surface, glutin};
 use std::env;
 
-mod chip8;
+mod vm;
 
 
 fn main() {
@@ -79,7 +79,7 @@ fn main() {
     //////////// INITIALIZE CHIP 8 SYSTEM //////////////
 
     // initialize the chip8 system
-    let mut chip8_vm = chip8::Vm::new();
+    let mut chip8_vm = vm::Vm::init();
 
     // load the game into the memory
     chip8_vm.load_game(path_to_game);
