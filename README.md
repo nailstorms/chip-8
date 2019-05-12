@@ -15,13 +15,13 @@ All installation guides are provided in respective links.
 
 To run a ROM, pass the location of the ROM file as a command line argument on `cargo run`.
 
-```console
+```
 cargo run [path-to-ROM]
 ```
 
 Alternatively, you can build the release version with `cargo build --release` and then launch the executable from target directory; method of passing the ROM is still the same.
 
-```console
+```
 cargo build --release
 cd /target/release
 ./chip-8 [path-to-ROM]
@@ -29,7 +29,7 @@ cd /target/release
 
 ## Documentation
 
-* [Wikipedia article on CHIP-8](https://en.wikipedia.org/wiki/CHIP-8)
+* Wikipedia article - https://en.wikipedia.org/wiki/CHIP-8
 * [mattmik : Mastering CHIP-8](http://mattmik.com/files/chip8/mastering/chip8.html)
 * [Cowgod's Chip-8 Technical Reference](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM)
 * [Laurence Muller's guide on how to write a CHIP-8 interpreter](http://www.multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/)
