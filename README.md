@@ -2,7 +2,7 @@
 
 **chip-8** is a CHIP-8 emulator/interpreter written using the Rust programming language.
 
-## Prerequisitees
+## Prerequisites
 
 * [Rust](https://github.com/rust-lang/rust)
 * [Cargo](https://crates.io) - Rust's package manager, necessary for building and running the program
@@ -35,4 +35,4 @@ cd /target/release
 * [Laurence Muller's guide on how to write a CHIP-8 interpreter](http://www.multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/)
 * The Rust Programming Language 'book' - https://doc.rust-lang.org/book/index.html
 * Cargo docs - https://doc.rust-lang.org/cargo/
-* SDL-2 docs - https://rust-sdl2.github.io/rust-sdl2/sdl2/
+* SDL2 docs - https://rust-sdl2.github.io/rust-sdl2/sdl2/
