@@ -1,18 +1,20 @@
 extern crate rand;
 extern crate sdl2;
 
+use std::env;
+use std::time::Duration;
+
+use sdl2::event::Event;
+use sdl2::keyboard::Keycode;
+
+use crate::ui::Ui;
+use crate::vm::Vm;
+
 mod vm;
 mod ui;
 mod opcodes;
 
-use std::env;
-use std::time::Duration;
-use sdl2::event::Event;
-use sdl2::keyboard::Keycode;
-use crate::vm::Vm;
-use crate::ui::Ui;
-
-static SCALE: u32 = 12;
+static SCALE: u32 = 16;
 
 fn main() {
     let sdl_context = sdl2::init().unwrap();
@@ -28,9 +30,9 @@ fn main() {
     'running: loop {
         for event in event_pump.poll_iter() {
             match event {
-                Event::Quit {..} | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
-                    break 'running
-                },
+                Event::Quit { .. } | Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
+                    break 'running;
+                }
                 Event::KeyDown { keycode: Some(keycode), .. } => ui.set_key_pressed(&mut vm, keycode),
                 Event::KeyUp { keycode: Some(keycode), .. } => ui.set_key_released(&mut vm, keycode),
                 _ => {}
