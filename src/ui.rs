@@ -10,7 +10,7 @@ use crate::vm::Vm;
 
 pub struct Ui {
     pub canvas: Canvas<Window>,
-    pub device: AudioDevice<SquareWave>
+    device: AudioDevice<SquareWave>
 }
 
 struct SquareWave {

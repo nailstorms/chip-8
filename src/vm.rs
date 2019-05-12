@@ -78,7 +78,9 @@ pub struct Vm {
     pub stack: [u16; STACK_SIZE],
     pub sp: usize,
 
-    pub draw_flag: bool
+    pub draw_flag: bool,
+
+    timer_refresh_cd: u8
 }
 
 impl Vm {
@@ -101,7 +103,9 @@ impl Vm {
             delay_timer: 0,
             sound_timer: 0,
 
-            draw_flag: false
+            draw_flag: false,
+
+            timer_refresh_cd: 10
         }
     }
 
@@ -267,17 +271,26 @@ impl Vm {
         };
     }
 
-    pub fn update_timers(&mut self) {
+    pub fn update_timers(&mut self, ui: &mut Ui) {
 
-        if self.delay_timer > 0 {
-            self.delay_timer -= 1;
-        }
-
-        if self.sound_timer > 0 {
-            if self.sound_timer == 1 {
-                panic!("BEEP!");
+        // The reason for checking if == 10:
+        // screen refresh rate - 600 Hz, timers refresh rate by docs should be 60 Hz,
+        // so we refresh them every 10 cycles
+        if self.timer_refresh_cd == 10 {
+            if self.delay_timer > 0 {
+                self.delay_timer -= 1;
             }
-            self.sound_timer -= 1;
+            if self.sound_timer > 0 {
+                if self.sound_timer == 1 {
+                    ui.play_sound();
+                }
+                self.sound_timer -= 1;
+            } else if self.sound_timer == 0 {
+                ui.stop_sound();
+            }
+            self.timer_refresh_cd = 0;
+        } else {
+            self.timer_refresh_cd += 1;
         }
     }
 
@@ -289,6 +302,6 @@ impl Vm {
 
         self.translate_opcode();
 
-        self.update_timers();
+        self.update_timers(ui);
     }
 }
